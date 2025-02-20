@@ -67,6 +67,15 @@
       "Filter": null
     },
     {
+      "Key": "RCON_USED",
+      "DefaultValue": "True",
+      "DisplayName": "Rcon usage",
+      "Description": "ARK rcon port used by rcon tools.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
       "Key": "QUERY_PORT",
       "DefaultValue": "27015",
       "DisplayName": "Query Port",
