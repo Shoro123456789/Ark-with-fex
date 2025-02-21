@@ -23,7 +23,7 @@
     },
     {
       "Key": "ARK_PASSWORD",
-      "DefaultValue": "",
+      "DefaultValue": "something",
       "DisplayName": "Server Password",
       "Description": "If specified, players must provide this password to join the server.",
       "AllowView": true,
