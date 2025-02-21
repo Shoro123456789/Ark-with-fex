@@ -1,0 +1,133 @@
+{
+  "Name": "Ark: Survival Evolved ARM64",
+  "Author": "josdekurk@gmail.com",
+  "UpdateUrl": "https://raw.githubusercontent.com/Shoro123456789/Ark-with-fex/refs/heads/main/Ark_SurvivalEvolvedARM64%20(1).json",
+  "DonateUrl": null,
+  "StartupCommand": "rmv() { echo -e \"stopping server\"; rcon -t rcon -a ${IP_CONFIG}:${RCON_PORT} -p ${ARK_ADMIN_PASSWORD} -c saveworld && rcon -a ${IP_CONFIG}:${RCON_PORT} -p ${ARK_ADMIN_PASSWORD} -c DoExit; }; trap rmv 15; cd ShooterGame/Binaries/Linux && FEXInterpreter ./ShooterGameServer {{SERVER_MAP}}?listen?SessionName=\"{{SESSION_NAME}}\"?ServerPassword={{ARK_PASSWORD}}?ServerAdminPassword={{ARK_ADMIN_PASSWORD}}?Port={{SERVER_PORT}}?RCONPort={{RCON_PORT}}?QueryPort={{QUERY_PORT}}?RCONEnabled={{RCON_USED}}$( [ \"$BATTLE_EYE\" == \"1\" ] || printf %s ' -NoBattlEye' ) -server {{ARGS}} -log & until echo \"waiting for rcon connection...\"; rcon -t rcon -a ${IP_CONFIG}:${RCON_PORT} -p ${ARK_ADMIN_PASSWORD}; do sleep 5; done",
+  "OnlineDetection": "Waiting\\ commands\\ for\\ \\$\\{IP_CONFIG}:",
+  "StopCommand": "^C",
+  "InstallShell": "/bin/bash",
+  "InstallDockerImage": "quintenqvd/pterodactyl_images:installer_steamcmd",
+  "InstallScript": "#!/bin/bash\r\n# steamcmd Base Installation Script\r\n#\r\n# Server Files: /mnt/server\r\n# Image to install with is 'ubuntu:18.04'\r\n\r\n## just in case someone removed the defaults.\r\nif [ \"${STEAM_USER}\" == \"\" ]; then\r\n    STEAM_USER=anonymous\r\n    STEAM_PASS=\"\"\r\n    STEAM_AUTH=\"\"\r\nfi\r\n\r\n## download and install steamcmd\r\ncd /tmp\r\nmkdir -p /mnt/server/steamcmd\r\ncurl -sSL -o steamcmd.tar.gz https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz\r\ntar -xzvf steamcmd.tar.gz -C /mnt/server/steamcmd\r\n\r\nmkdir -p /mnt/server/Engine/Binaries/ThirdParty/SteamCMD/Linux\r\ntar -xzvf steamcmd.tar.gz -C /mnt/server/Engine/Binaries/ThirdParty/SteamCMD/Linux\r\nmkdir -p /mnt/server/steamapps # Fix steamcmd disk write error when this folder is missing\r\ncd /mnt/server/steamcmd\r\n\r\n# SteamCMD fails otherwise for some reason, even running as root.\r\n# This is changed at the end of the install process anyways.\r\nchown -R root:root /mnt\r\nexport HOME=/mnt/server\r\n\r\n## install game using steamcmd\r\n./steamcmd.sh +force_install_dir /mnt/server +login ${STEAM_USER} ${STEAM_PASS} ${STEAM_AUTH} +app_update ${SRCDS_APPID} ${EXTRA_FLAGS} +quit ## other flags may be needed depending on install. looking at you cs 1.6\r\n\r\n## set up 32 bit libraries\r\nmkdir -p /mnt/server/.steam/sdk32\r\ncp -v linux32/steamclient.so ../.steam/sdk32/steamclient.so\r\n\r\n## set up 64 bit libraries\r\nmkdir -p /mnt/server/.steam/sdk64\r\ncp -v linux64/steamclient.so ../.steam/sdk64/steamclient.so\r\n\r\n## create a symbolic link for loading mods\r\ncd /mnt/server/Engine/Binaries/ThirdParty/SteamCMD/Linux\r\nln -sf ../../../../../Steam/steamapps steamapps\r\ncd /mnt/server\r\necho \"done\"",
+  "ParseConfiguration": "[]",
+  "AllocationsNeeded": 1,
+  "Variables": [
+    {
+      "Key": "ARK_PASSWORD",
+      "DefaultValue": "",
+      "DisplayName": "Server Password",
+      "Description": "If specified, players must provide this password to join the server.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "ARK_ADMIN_PASSWORD",
+      "DefaultValue": "PleaseChangeMe",
+      "DisplayName": "Admin Password",
+      "Description": "If specified, players must provide this password (via the in-game console) to gain access to administrator commands on the server.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "SERVER_MAP",
+      "DefaultValue": "TheIsland",
+      "DisplayName": "Server Map",
+      "Description": "Available Maps: TheIsland, TheCenter, Ragnarok, ScorchedEarth_P, Aberration_P, Extinction, Valguero_P, Genesis, CrystalIsles, Gen2, LostIsland, Fjordur",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "SESSION_NAME",
+      "DefaultValue": "A Pterodactyl Hosted ARK Server",
+      "DisplayName": "Server Name",
+      "Description": "ARK server name",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "IP_CONFIG",
+      "DefaultValue": "127.0.0.1",
+      "DisplayName": "IP address",
+      "Description": "ARK rcon port used by rcon tools.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "RCON_PORT",
+      "DefaultValue": "27020",
+      "DisplayName": "Rcon Port",
+      "Description": "ARK rcon port used by rcon tools.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "RCON_USED",
+      "DefaultValue": "True",
+      "DisplayName": "Rcon usage",
+      "Description": "ARK rcon port used by rcon tools.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "QUERY_PORT",
+      "DefaultValue": "27015",
+      "DisplayName": "Query Port",
+      "Description": "ARK query port used by steam server browser and ark client server browser.",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "AUTO_UPDATE",
+      "DefaultValue": "0",
+      "DisplayName": "Auto-update server",
+      "Description": "This is to enable auto-updating for servers.\r\n\r\nDefault is 0. Set to 1 to update",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "BATTLE_EYE",
+      "DefaultValue": "1",
+      "DisplayName": "Battle Eye",
+      "Description": "Enable BattleEye\r\n\r\n0 to disable\r\n1 to enable\r\n\r\ndefault=\"1\"",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    },
+    {
+      "Key": "SRCDS_APPID",
+      "DefaultValue": "376030",
+      "DisplayName": "App ID",
+      "Description": "ARK steam app id for auto updates. Leave blank to avoid auto update.",
+      "AllowView": true,
+      "AllowEdit": false,
+      "Filter": null
+    },
+    {
+      "Key": "ARGS",
+      "DefaultValue": "",
+      "DisplayName": "Additional Arguments",
+      "Description": "Specify additional launch parameters such as -crossplay. You must include a dash - and separate each parameter with space: -crossplay -exclusivejoin",
+      "AllowView": true,
+      "AllowEdit": true,
+      "Filter": null
+    }
+  ],
+  "DefaultDockerImage": 0,
+  "AllowDockerImageChange": true,
+  "DockerImages": [
+    {
+      "DisplayName": "FEX",
+      "Name": "quintenqvd/pterodactyl_images:dev_fex",
+      "AutoPull": true
+    }
+  ]
+}
